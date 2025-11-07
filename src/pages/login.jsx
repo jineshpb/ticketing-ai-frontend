@@ -19,7 +19,7 @@ function LoginPage() {
     setLoading(true); 
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
+      const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/login`, {
         method: 'POST',
         body: JSON.stringify(formData),
         headers: {
@@ -48,9 +48,9 @@ function LoginPage() {
     <div>
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-        <button type="submit" disabled={loading}>Login</button>
+        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className=' input input-bordered' />
+        <input type="password" name="password" className='input input-bordered' placeholder="Password" value={formData.password} onChange={handleChange} />
+        <button type="submit" disabled={loading} className='btn btn-primary w-auto'>Login</button>
       </form>
     </div>
   )
