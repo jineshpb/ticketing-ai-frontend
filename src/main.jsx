@@ -8,6 +8,7 @@ import Ticket from './pages/ticket'
 import TicketDetailsPage from './pages/ticket'
 import LoginPage from './pages/login'
 import SignupPage from './pages/signup'
+import Admin from './pages/admin'
 
 
 createRoot(document.getElementById('root')).render(
@@ -35,6 +36,12 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup" element={
           <CheckAuth protected={false}>
             <SignupPage />
+          </CheckAuth>} />
+      </Routes>
+      <Routes>
+        <Route path="/admin" element={
+          <CheckAuth protected={true}>
+            <Admin />
           </CheckAuth>} />
       </Routes>
     </BrowserRouter>
