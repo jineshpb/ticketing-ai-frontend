@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -62,58 +68,95 @@ const TicketDetailsPage = () => {
 
     return null;
   }, [comments]);
+  const pollIntervalRef = useRef(null);
 
-  const fetchTicketDetails = useCallback(async () => {
-    if (!ticketId) {
-      setFetchError("Missing ticket identifier.");
-      setTicket(null);
-      setIsLoading(false);
-      return;
-    }
-
-    if (!token) {
-      setFetchError("Authentication token is missing. Please log in again.");
-      setTicket(null);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        `${import.meta.env.VITE_SERVER_URL}/ticket/${ticketId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+  const fetchTicketDetails = useCallback(
+    async ({ silent = false } = {}) => {
+      if (!ticketId) {
+        setFetchError("Missing ticket identifier.");
+        setTicket(null);
+        if (!silent) {
+          setIsLoading(false);
         }
-      );
-
-      if (!response.ok) {
-        const errorPayload = await response.json().catch(() => null);
-        const errorMessage =
-          errorPayload?.error || "Failed to load ticket details.";
-        throw new Error(errorMessage);
+        return;
       }
 
-      const data = await response.json();
-      setTicket(data);
-      setFetchError("");
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to load ticket details.";
-      setFetchError(message);
-      setTicket(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [ticketId, token]);
+      if (!token) {
+        setFetchError("Authentication token is missing. Please log in again.");
+        setTicket(null);
+        if (!silent) {
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      try {
+        if (!silent) {
+          setIsLoading(true);
+        }
+        const response = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/ticket/${ticketId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorPayload = await response.json().catch(() => null);
+          const errorMessage =
+            errorPayload?.error || "Failed to load ticket details.";
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        setTicket(data);
+        setFetchError("");
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Failed to load ticket details.";
+        setFetchError(message);
+        if (!silent) {
+          setTicket(null);
+        }
+      } finally {
+        if (!silent) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [ticketId, token]
+  );
 
   useEffect(() => {
     fetchTicketDetails();
   }, [fetchTicketDetails]);
+
+  useEffect(() => {
+    const shouldPoll =
+      ticket && (!ticket.aiSuggestions || ticket.status !== "RESOLVED");
+
+    if (shouldPoll) {
+      if (!pollIntervalRef.current) {
+        pollIntervalRef.current = setInterval(() => {
+          fetchTicketDetails({ silent: true });
+        }, 4000);
+      }
+    } else if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, [fetchTicketDetails, ticket]);
 
   const handleBackClick = () => {
     navigate("/");
@@ -340,7 +383,7 @@ const TicketDetailsPage = () => {
 
   if (fetchError) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-6 px-4 py-16">
+      <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-6 px-4 py-16 bg-gray-100">
         <div className="flex flex-col items-center gap-3 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-semibold text-red-600">
             Unable to load ticket
@@ -434,14 +477,14 @@ const TicketDetailsPage = () => {
   const statusBadgeClass = getStatusBadgeClass(ticket.status);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-3xl bg-white px-4 py-16">
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+    <main className="mx-auto min-h-screen w-full  bg-gray-50 px-4 py-16 rounded-lg">
+      <div className="flex flex-col gap-8 max-w-3xl mx-auto">
+        <div className="flex flex-col-reverse items-start justify-between gap-4">
           <div className="flex flex-col gap-3">
             <span className="text-sm font-medium uppercase tracking-wide text-slate-500">
               Ticket
             </span>
-            <h1 className="text-3xl font-semibold text-slate-900">
+            <h1 className="text-3xl font-semibold text-gray-900">
               {ticket.title}
             </h1>
             <div className="flex flex-wrap items-center gap-2">
@@ -451,7 +494,7 @@ const TicketDetailsPage = () => {
               </span>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-row-reverse items-center gap-3">
             {canReopenTicket ? (
               <button
                 type="button"

@@ -170,23 +170,23 @@ const Tickets = () => {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tickets</h1>
-          {!loading && (
-            <p className="mt-2 text-gray-600">
-              {tickets.length} {tickets.length === 1 ? "ticket" : "tickets"}{" "}
-              found
-            </p>
-          )}
-        </div>
 
         {/* Create Ticket Form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Create New Ticket
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-8 flex flex-col gap-4 items-start">
+          <div className="mb-2">
+            <h2 className="text-2xl font-bold text-gray-900  w-full">
+              Create New Ticket
+            </h2>
+            <p className="text-sm text-gray-500 w-full">
+              Maske sure to enter a valid title and description
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4 w-full flex flex-col gap-4 items-end"
+          >
+            <div className="w-full">
               <label
                 htmlFor="title"
                 className="block text-sm font-medium text-gray-700 mb-1"
@@ -204,7 +204,7 @@ const Tickets = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
             </div>
-            <div>
+            <div className="w-full">
               <label
                 htmlFor="description"
                 className="block text-sm font-medium text-gray-700 mb-1"
@@ -225,7 +225,7 @@ const Tickets = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+              className="w-fit px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
               {submitting ? "Creating..." : "Create Ticket"}
             </button>
@@ -233,6 +233,15 @@ const Tickets = () => {
         </div>
 
         {/* Tickets List */}
+        <div className="mb-4">
+          <h1 className="text-3xl font-bold text-gray-900">Tickets</h1>
+          {!loading && (
+            <p className="mt-2 text-gray-600">
+              {tickets.length} {tickets.length === 1 ? "ticket" : "tickets"}{" "}
+              found
+            </p>
+          )}
+        </div>
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-center justify-between">
             <div className="flex items-center">
@@ -261,14 +270,14 @@ const Tickets = () => {
         )}
 
         {loading ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden p-12 text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             <p className="mt-4 text-gray-600">Loading tickets...</p>
           </div>
         ) : tickets.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden p-12 text-center border border-gray-500">
             <svg
-              className="mx-auto h-16 w-16 text-gray-400"
+              className="mx-auto h-16 w-16 text-gray-200"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -288,7 +297,7 @@ const Tickets = () => {
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
