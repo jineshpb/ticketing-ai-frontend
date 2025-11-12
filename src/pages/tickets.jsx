@@ -1,5 +1,28 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle, Inbox, Loader2 } from "lucide-react";
 
 const Tickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -110,18 +133,17 @@ const Tickets = () => {
   };
 
   const getStatusBadgeClass = (status) => {
-    const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold";
     switch (status?.toLowerCase()) {
       case "open":
-        return `${baseClasses} bg-blue-100 text-blue-800`;
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "in progress":
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "resolved":
-        return `${baseClasses} bg-green-100 text-green-800`;
+        return "bg-green-100 text-green-800 border-green-200";
       case "closed":
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+        return "bg-gray-100 text-gray-800 border-gray-200";
       default:
-        return `${baseClasses} bg-gray-100 text-gray-600`;
+        return "bg-gray-100 text-gray-600 border-gray-200";
     }
   };
 
@@ -167,163 +189,128 @@ const Tickets = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-
         {/* Create Ticket Form */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-8 flex flex-col gap-4 items-start">
-          <div className="mb-2">
-            <h2 className="text-2xl font-bold text-gray-900  w-full">
-              Create New Ticket
-            </h2>
-            <p className="text-sm text-gray-500 w-full">
-              Maske sure to enter a valid title and description
-            </p>
-          </div>
-
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4 w-full flex flex-col gap-4 items-end"
-          >
-            <div className="w-full">
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                placeholder="Enter ticket title"
-                value={formData.title}
-                onChange={handleChange}
-                disabled={submitting}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
-              />
-            </div>
-            <div className="w-full">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                placeholder="Enter ticket description"
-                value={formData.description}
-                onChange={handleChange}
-                disabled={submitting}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-fit px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Create New Ticket</CardTitle>
+            <CardDescription>
+              Make sure to enter a valid title and description
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 w-full flex flex-col gap-4"
             >
-              {submitting ? "Creating..." : "Create Ticket"}
-            </button>
-          </form>
-        </div>
+              <div className="w-full">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  type="text"
+                  id="title"
+                  name="title"
+                  placeholder="Enter ticket title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  disabled={submitting}
+                  className="mt-1"
+                />
+              </div>
+              <div className="w-full">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Enter ticket description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  disabled={submitting}
+                  rows={4}
+                  className="mt-1"
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Ticket"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
 
         {/* Tickets List */}
         <div className="mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">Tickets</h1>
+          <h1 className="text-3xl font-bold text-foreground">Tickets</h1>
           {!loading && (
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-muted-foreground">
               {tickets.length} {tickets.length === 1 ? "ticket" : "tickets"}{" "}
               found
             </p>
           )}
         </div>
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <svg
-                className="h-5 w-5 text-red-500 mr-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>{error}</span>
+              <Button
+                onClick={fetchTickets}
+                variant="outline"
+                size="sm"
+                className="ml-4"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <p className="text-red-700">{error}</p>
-            </div>
-            <button
-              onClick={fetchTickets}
-              className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
         )}
 
         {loading ? (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading tickets...</p>
-          </div>
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+              <p className="mt-4 text-muted-foreground">Loading tickets...</p>
+            </CardContent>
+          </Card>
         ) : tickets.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden p-12 text-center border border-gray-500">
-            <svg
-              className="mx-auto h-16 w-16 text-gray-200"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">
-              No tickets found
-            </h3>
-            <p className="mt-2 text-gray-500">
-              Get started by creating a new ticket above.
-            </p>
-          </div>
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Inbox className="mx-auto h-16 w-16 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-medium text-foreground">
+                No tickets found
+              </h3>
+              <p className="mt-2 text-muted-foreground">
+                Get started by creating a new ticket above.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+          <Card>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Title
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Description
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Status</TableHead>
                     {tickets[0]?.assignedTo && (
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Assigned To
-                      </th>
+                      <TableHead>Assigned To</TableHead>
                     )}
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created At
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                    <TableHead>Created At</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {tickets.map((ticket) => (
-                    <tr
+                    <TableRow
                       key={ticket._id}
                       onClick={() => handleTicketClick(ticket._id)}
                       tabIndex={0}
@@ -333,43 +320,41 @@ const Tickets = () => {
                         handleTicketKeyDown(event, ticket._id)
                       }
                       aria-busy={triggeringTicketId === ticket._id}
-                      className={`transition-colors ${
+                      className={`cursor-pointer transition-colors ${
                         triggeringTicketId === ticket._id
-                          ? "cursor-wait bg-gray-100"
-                          : "cursor-pointer hover:bg-gray-50"
+                          ? "cursor-wait bg-muted"
+                          : "hover:bg-muted/50"
                       }`}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {ticket.title}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 max-w-md truncate">
+                      <TableCell className="font-medium">
+                        {ticket.title}
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-muted-foreground max-w-md truncate">
                           {ticket.description}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getStatusBadgeClass(ticket.status)}>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusBadgeClass(ticket.status)}>
                           {ticket.status || "Open"}
-                        </span>
-                      </td>
+                        </Badge>
+                      </TableCell>
                       {ticket.assignedTo && (
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-600">
+                        <TableCell>
+                          <div className="text-sm text-muted-foreground">
                             {ticket.assignedTo.email || "Unassigned"}
                           </div>
-                        </td>
+                        </TableCell>
                       )}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {formatDate(ticket.createdAt)}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
-          </div>
+          </Card>
         )}
       </div>
     </div>

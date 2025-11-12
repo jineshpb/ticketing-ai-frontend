@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertCircle, Users, Loader2, Save, X, Edit } from "lucide-react";
 
 const Admin = () => {
   const [users, setUsers] = useState([])
@@ -87,6 +96,10 @@ const Admin = () => {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value })
   }
 
+  const handleRoleChange = (value) => {
+    setEditFormData({ ...editFormData, role: value })
+  }
+
   const handleUpdateUser = async (userEmail) => {
     if (!editFormData.role) {
       alert('Role is required')
@@ -145,28 +158,27 @@ const Admin = () => {
   }
 
   const getRoleBadgeClass = (role) => {
-    const baseClasses = 'px-3 py-1 rounded-full text-xs font-semibold'
     switch (role?.toLowerCase()) {
       case 'admin':
-        return `${baseClasses} bg-red-100 text-red-800`
+        return 'bg-red-100 text-red-800 border-red-200'
       case 'moderator':
-        return `${baseClasses} bg-purple-100 text-purple-800`
+        return 'bg-purple-100 text-purple-800 border-purple-200'
       case 'user':
-        return `${baseClasses} bg-blue-100 text-blue-800`
+        return 'bg-blue-100 text-blue-800 border-blue-200'
       default:
-        return `${baseClasses} bg-gray-100 text-gray-600`
+        return 'bg-gray-100 text-gray-600 border-gray-200'
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="mt-2 text-gray-600">Manage all users in the system</p>
+          <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
+          <p className="mt-2 text-muted-foreground">Manage all users in the system</p>
           {!loading && (
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               {users.length} {users.length === 1 ? 'user' : 'users'} found
             </p>
           )}
@@ -174,154 +186,156 @@ const Admin = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-red-700">{error}</p>
-            </div>
-            <button
-              onClick={fetchUsers}
-              className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              aria-label="Retry fetching users"
-            >
-              Retry
-            </button>
-          </div>
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>{error}</span>
+              <Button
+                onClick={fetchUsers}
+                variant="outline"
+                size="sm"
+                className="ml-4"
+              >
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
         )}
 
         {/* Loading State */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading users...</p>
-          </div>
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
+              <p className="mt-4 text-muted-foreground">Loading users...</p>
+            </CardContent>
+          </Card>
         ) : users.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">No users found</h3>
-            <p className="mt-2 text-gray-500">There are no users in the system yet.</p>
-          </div>
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Users className="mx-auto h-16 w-16 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-medium text-foreground">No users found</h3>
+              <p className="mt-2 text-muted-foreground">There are no users in the system yet.</p>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <Card>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Skills
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created At
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Skills</TableHead>
+                    <TableHead>Created At</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{user.email}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <TableRow key={user._id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">{user.email}</TableCell>
+                      <TableCell>
                         {editingUser === user._id ? (
-                          <select
-                            name="role"
+                          <Select
                             value={editFormData.role}
-                            onChange={handleEditChange}
+                            onValueChange={handleRoleChange}
                             disabled={submitting}
-                            className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                           >
-                            <option value="user">User</option>
-                            <option value="moderator">Moderator</option>
-                            <option value="admin">Admin</option>
-                          </select>
+                            <SelectTrigger className="w-[140px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="user">User</SelectItem>
+                              <SelectItem value="moderator">Moderator</SelectItem>
+                              <SelectItem value="admin">Admin</SelectItem>
+                            </SelectContent>
+                          </Select>
                         ) : (
-                          <span className={getRoleBadgeClass(user.role)}>
+                          <Badge className={getRoleBadgeClass(user.role)}>
                             {user.role || 'user'}
-                          </span>
+                          </Badge>
                         )}
-                      </td>
-                      <td className="px-6 py-4">
+                      </TableCell>
+                      <TableCell>
                         {editingUser === user._id ? (
-                          <input
+                          <Input
                             type="text"
                             name="skills"
                             value={editFormData.skills}
                             onChange={handleEditChange}
                             placeholder="Enter skills separated by commas"
                             disabled={submitting}
-                            className="w-full px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            className="w-full"
                           />
                         ) : (
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             {Array.isArray(user.skills) && user.skills.length > 0 ? (
                               <div className="flex flex-wrap gap-1">
                                 {user.skills.map((skill, index) => (
-                                  <span
-                                    key={index}
-                                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs"
-                                  >
+                                  <Badge key={index} variant="secondary" className="text-xs">
                                     {skill}
-                                  </span>
+                                  </Badge>
                                 ))}
                               </div>
                             ) : (
-                              <span className="text-gray-400">No skills</span>
+                              <span className="text-muted-foreground">No skills</span>
                             )}
                           </div>
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
                         {formatDate(user.createdAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      </TableCell>
+                      <TableCell>
                         {editingUser === user._id ? (
                           <div className="flex gap-2">
-                            <button
+                            <Button
                               onClick={() => handleUpdateUser(user.email)}
                               disabled={submitting}
-                              className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-colors disabled:bg-green-400 disabled:cursor-not-allowed text-xs"
-                              aria-label={`Save changes for ${user.email}`}
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700"
                             >
-                              {submitting ? 'Saving...' : 'Save'}
-                            </button>
-                            <button
+                              {submitting ? (
+                                <>
+                                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                  Saving...
+                                </>
+                              ) : (
+                                <>
+                                  <Save className="mr-2 h-3 w-3" />
+                                  Save
+                                </>
+                              )}
+                            </Button>
+                            <Button
                               onClick={handleCancelEdit}
                               disabled={submitting}
-                              className="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
-                              aria-label={`Cancel editing ${user.email}`}
+                              size="sm"
+                              variant="outline"
                             >
+                              <X className="mr-2 h-3 w-3" />
                               Cancel
-                            </button>
+                            </Button>
                           </div>
                         ) : (
-                          <button
+                          <Button
                             onClick={() => handleEditClick(user)}
-                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors text-xs"
-                            aria-label={`Edit user ${user.email}`}
+                            size="sm"
+                            variant="outline"
                           >
+                            <Edit className="mr-2 h-3 w-3" />
                             Edit
-                          </button>
+                          </Button>
                         )}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
-          </div>
+          </Card>
         )}
       </div>
     </div>

@@ -1,6 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -44,33 +54,50 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col   gap-2 max-w-sm mx-auto mt-30">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-2 max-w-sm mx-auto mt-30">
+      <div className="flex items-center gap-2 mb-8">
         <img src="/logo.svg" alt="logo" className="w-6 h-6" />
         <h1 className="text-2xl font-bold items-start">Ticketing AI</h1>
       </div>
-      <h1 className="text-lg font-normal items-start mt-8">Login</h1>
-      <form onSubmit={handleLogin} className="flex flex-col gap-2 mt-2">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className=" input input-bordered w-full"
-        />
-        <input
-          type="password"
-          name="password"
-          className="input input-bordered w-full"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-        <button type="submit" disabled={loading} className="btn btn-primary  ">
-          Login
-        </button>
-      </form>
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>
+            Enter your credentials to access your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

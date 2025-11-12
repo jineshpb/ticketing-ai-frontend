@@ -9,6 +9,25 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Loader2,
+  ArrowLeft,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 
 const TicketDetailsPage = () => {
   const { id: ticketId } = useParams();
@@ -341,17 +360,15 @@ const TicketDetailsPage = () => {
   };
 
   const getStatusBadgeClass = (status) => {
-    const baseClasses =
-      "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide";
     switch (status?.toUpperCase?.()) {
       case "RESOLVED":
-        return `${baseClasses} bg-emerald-100 text-emerald-800`;
+        return "bg-emerald-100 text-emerald-800 border-emerald-200";
       case "IN_PROGRESS":
-        return `${baseClasses} bg-indigo-100 text-indigo-800`;
+        return "bg-indigo-100 text-indigo-800 border-indigo-200";
       case "TODO":
-        return `${baseClasses} bg-slate-100 text-slate-700`;
+        return "bg-slate-100 text-slate-700 border-slate-200";
       default:
-        return `${baseClasses} bg-slate-200 text-slate-600`;
+        return "bg-slate-200 text-slate-600 border-slate-300";
     }
   };
 
@@ -371,10 +388,11 @@ const TicketDetailsPage = () => {
   if (isLoading) {
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-16">
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <h1 className="text-2xl font-semibold text-foreground">
           Loading ticket…
         </h1>
-        <p className="text-base text-slate-600">
+        <p className="text-base text-muted-foreground">
           Fetching the latest details for this ticket.
         </p>
       </main>
@@ -383,33 +401,36 @@ const TicketDetailsPage = () => {
 
   if (fetchError) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-6 px-4 py-16 bg-gray-100">
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold text-red-600">
-            Unable to load ticket
-          </h1>
-          <p className="text-center text-base text-slate-600">{fetchError}</p>
-          <button
-            type="button"
-            onClick={handleRetryClick}
-            onKeyDown={handleRetryKeyDown}
-            tabIndex={0}
-            aria-label="Retry loading ticket details"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Retry
-          </button>
-        </div>
-        <button
-          type="button"
-          onClick={handleBackClick}
-          onKeyDown={handleBackKeyDown}
-          tabIndex={0}
-          aria-label="Go back to ticket list"
-          className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Back to tickets
-        </button>
+      <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-6 px-4 py-16">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-destructive">
+              Unable to load ticket
+            </CardTitle>
+            <CardDescription>{fetchError}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex gap-3">
+            <Button
+              onClick={handleRetryClick}
+              onKeyDown={handleRetryKeyDown}
+              tabIndex={0}
+              aria-label="Retry loading ticket details"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+            <Button
+              onClick={handleBackClick}
+              onKeyDown={handleBackKeyDown}
+              tabIndex={0}
+              aria-label="Go back to ticket list"
+              variant="outline"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to tickets
+            </Button>
+          </CardContent>
+        </Card>
       </main>
     );
   }
@@ -417,33 +438,32 @@ const TicketDetailsPage = () => {
   if (!ticket) {
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-16">
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="text-2xl font-semibold text-foreground">
           Ticket not available
         </h1>
-        <p className="text-base text-slate-600">
+        <p className="text-base text-muted-foreground">
           Try refreshing the page or returning to the ticket list.
         </p>
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <Button
             onClick={handleRetryClick}
             onKeyDown={handleRetryKeyDown}
             tabIndex={0}
             aria-label="Reload ticket details"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
+            <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={handleBackClick}
             onKeyDown={handleBackKeyDown}
             tabIndex={0}
             aria-label="Return to ticket list"
-            className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            variant="outline"
           >
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to tickets
-          </button>
+          </Button>
         </div>
       </main>
     );
@@ -477,306 +497,342 @@ const TicketDetailsPage = () => {
   const statusBadgeClass = getStatusBadgeClass(ticket.status);
 
   return (
-    <main className="mx-auto min-h-screen w-full  bg-gray-50 px-4 py-16 rounded-lg">
+    <main className="mx-auto min-h-screen w-full bg-background px-4 py-16">
       <div className="flex flex-col gap-8 max-w-3xl mx-auto">
         <div className="flex flex-col-reverse items-start justify-between gap-4">
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium uppercase tracking-wide text-slate-500">
+            <span className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
               Ticket
             </span>
-            <h1 className="text-3xl font-semibold text-gray-900">
+            <h1 className="text-3xl font-semibold text-foreground">
               {ticket.title}
             </h1>
             <div className="flex flex-wrap items-center gap-2">
-              <span className={statusBadgeClass}>{statusLabel}</span>
-              <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              <Badge className={statusBadgeClass}>{statusLabel}</Badge>
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Priority: {priorityLabel}
               </span>
             </div>
           </div>
           <div className="flex flex-row-reverse items-center gap-3">
             {canReopenTicket ? (
-              <button
-                type="button"
+              <Button
                 onClick={handleReopenClick}
                 onKeyDown={handleReopenKeyDown}
                 tabIndex={0}
                 aria-label="Reopen ticket"
                 disabled={isUpdatingStatus}
-                className="rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-amber-400"
+                variant="outline"
+                className="bg-amber-600 text-white hover:bg-amber-700"
               >
-                {isUpdatingStatus ? "Reopening..." : "Reopen ticket"}
-              </button>
+                {isUpdatingStatus ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Reopening...
+                  </>
+                ) : (
+                  "Reopen ticket"
+                )}
+              </Button>
             ) : null}
-            <button
-              type="button"
+            <Button
               onClick={handleBackClick}
               onKeyDown={handleBackKeyDown}
               tabIndex={0}
               aria-label="Return to ticket list"
-              className="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              variant="outline"
             >
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Back to tickets
-            </button>
+            </Button>
           </div>
         </div>
 
-        <section className="grid gap-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <article className="grid gap-2">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-              Description
-            </h2>
-            <p className="text-base text-slate-700">{ticket.description}</p>
-          </article>
-
-          <article className="grid gap-2">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-              Status
-            </h2>
-            <p className="text-base text-slate-700">{statusLabel}</p>
-          </article>
-
-          <article className="grid gap-2">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-              Assigned To
-            </h2>
-            <p className="text-base text-slate-700">{assignedToLabel}</p>
-          </article>
-
-          <article className="grid gap-2">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-              Created At
-            </h2>
-            <p className="text-base text-slate-700">{formattedCreatedAt}</p>
-          </article>
-
-          <article className="grid gap-2 text-base">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-              Helpful Notes
-            </h2>
-            <div className="prose max-w-none leading-relaxed">
-              <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
-                {helpfulNotes}
-              </ReactMarkdown>
-            </div>
-          </article>
-
-          {relatedSkills.length ? (
-            <article className="grid gap-2">
-              <h2 className="text-sm font-medium uppercase tracking-wide text-slate-500">
-                Related Skills
+        <Card>
+          <CardContent className="p-6 space-y-6">
+            <div className="grid gap-2">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                Description
               </h2>
-              <div className="flex flex-wrap gap-2">
-                {relatedSkills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700"
-                  >
-                    {skill}
-                  </span>
-                ))}
+              <p className="text-base text-foreground">{ticket.description}</p>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-2">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                Status
+              </h2>
+              <p className="text-base text-foreground">{statusLabel}</p>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-2">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                Assigned To
+              </h2>
+              <p className="text-base text-foreground">{assignedToLabel}</p>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-2">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                Created At
+              </h2>
+              <p className="text-base text-foreground">{formattedCreatedAt}</p>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-2 text-base">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                Helpful Notes
+              </h2>
+              <div className="prose max-w-none leading-relaxed">
+                <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]}>
+                  {helpfulNotes}
+                </ReactMarkdown>
               </div>
-            </article>
-          ) : null}
-        </section>
+            </div>
 
-        <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <header className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-slate-900">Discussion</h2>
-            <span className="text-sm text-slate-500">
-              {comments.length} {comments.length === 1 ? "comment" : "comments"}
-            </span>
-          </header>
+            {relatedSkills.length ? (
+              <>
+                <Separator />
+                <div className="grid gap-2">
+                  <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                    Related Skills
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {relatedSkills.map((skill) => (
+                      <Badge key={skill} variant="secondary">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </CardContent>
+        </Card>
 
-          {comments.length === 0 ? (
-            <p className="rounded-md bg-slate-50 p-4 text-sm text-slate-600">
-              No comments yet. Moderator updates will show here.
-            </p>
-          ) : (
-            <ul className="grid gap-4">
-              {comments.map((comment, index) => {
-                const isAiComment = Boolean(comment?.isAiGenerated);
-                const createdAtLabel = formatDateTime(comment?.createdAt);
-                const rawCommentId =
-                  typeof comment?.commentId === "string"
-                    ? comment.commentId
-                    : comment?.commentId?.toString?.();
-                const commentIdentifier =
-                  rawCommentId ||
-                  comment?._id?.toString?.() ||
-                  comment?._id ||
-                  `${index}`;
-                const hasCommentId = Boolean(rawCommentId);
-                const isLatestAiSuggestion =
-                  Boolean(latestAiCommentId) &&
-                  rawCommentId === latestAiCommentId &&
-                  isAiComment &&
-                  hasCommentId;
-                const authorLabel =
-                  comment?.role ||
-                  comment?.author?.email ||
-                  `Participant ${index + 1}`;
-                const decision = comment?.metadata?.decision;
-                const decisionAt = comment?.metadata?.decisionAt
-                  ? formatDateTime(comment.metadata.decisionAt)
-                  : null;
+        <Card>
+          <CardHeader>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CardTitle>Discussion</CardTitle>
+              <span className="text-sm text-muted-foreground">
+                {comments.length}{" "}
+                {comments.length === 1 ? "comment" : "comments"}
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {comments.length === 0 ? (
+              <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
+                No comments yet. Moderator updates will show here.
+              </p>
+            ) : (
+              <ul className="grid gap-4">
+                {comments.map((comment, index) => {
+                  const isAiComment = Boolean(comment?.isAiGenerated);
+                  const createdAtLabel = formatDateTime(comment?.createdAt);
+                  const rawCommentId =
+                    typeof comment?.commentId === "string"
+                      ? comment.commentId
+                      : comment?.commentId?.toString?.();
+                  const commentIdentifier =
+                    rawCommentId ||
+                    comment?._id?.toString?.() ||
+                    comment?._id ||
+                    `${index}`;
+                  const hasCommentId = Boolean(rawCommentId);
+                  const isLatestAiSuggestion =
+                    Boolean(latestAiCommentId) &&
+                    rawCommentId === latestAiCommentId &&
+                    isAiComment &&
+                    hasCommentId;
+                  const authorLabel =
+                    comment?.role ||
+                    comment?.author?.email ||
+                    `Participant ${index + 1}`;
+                  const decision = comment?.metadata?.decision;
+                  const decisionAt = comment?.metadata?.decisionAt
+                    ? formatDateTime(comment.metadata.decisionAt)
+                    : null;
 
-                return (
-                  <li
-                    key={`${commentIdentifier}-${createdAtLabel}`}
-                    className={`rounded-lg border p-4 ${
-                      isAiComment
-                        ? "border-indigo-200 bg-indigo-50"
-                        : "border-slate-200 bg-white"
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-900">
-                          {authorLabel}
-                        </span>
-                        {isAiComment ? (
-                          <span className="rounded-full bg-indigo-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white">
-                            AI suggestion
+                  return (
+                    <li
+                      key={`${commentIdentifier}-${createdAtLabel}`}
+                      className={`rounded-lg border p-4 ${
+                        isAiComment
+                          ? "border-indigo-200 bg-indigo-50"
+                          : "border-border bg-card"
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-foreground">
+                            {authorLabel}
                           </span>
-                        ) : null}
+                          {isAiComment ? (
+                            <Badge className="bg-indigo-600 text-white">
+                              AI suggestion
+                            </Badge>
+                          ) : null}
+                        </div>
+                        <time className="text-xs text-muted-foreground">
+                          {createdAtLabel}
+                        </time>
                       </div>
-                      <time className="text-xs text-slate-500">
-                        {createdAtLabel}
-                      </time>
-                    </div>
-                    <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-700">
-                      {comment?.body || "No content provided."}
-                    </p>
-                    {comment?.metadata?.followUpTasks?.length ? (
-                      <div className="mt-3 grid gap-2">
-                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                          Suggested Tasks
-                        </p>
-                        <ul className="grid gap-2">
-                          {comment.metadata.followUpTasks.map(
-                            (task, taskIndex) => (
-                              <li
-                                key={`${task?.title || "task"}-${taskIndex}`}
-                                className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600"
-                              >
-                                {task?.title}
-                              </li>
+                      <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
+                        {comment?.body || "No content provided."}
+                      </p>
+                      {comment?.metadata?.followUpTasks?.length ? (
+                        <div className="mt-3 grid gap-2">
+                          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Suggested Tasks
+                          </p>
+                          <ul className="grid gap-2">
+                            {comment.metadata.followUpTasks.map(
+                              (task, taskIndex) => (
+                                <li
+                                  key={`${task?.title || "task"}-${taskIndex}`}
+                                  className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground"
+                                >
+                                  {task?.title}
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {isAiComment ? (
+                        <div className="mt-4 flex flex-wrap items-center gap-3">
+                          {decision ? (
+                            <Badge
+                              className={
+                                decision === "accepted"
+                                  ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                                  : "bg-rose-100 text-rose-700 border-rose-200"
+                              }
+                            >
+                              {decision === "accepted"
+                                ? "Suggestion accepted"
+                                : "Suggestion rejected"}
+                              {decisionAt ? ` · ${decisionAt}` : ""}
+                            </Badge>
+                          ) : canModerateSuggestions ? (
+                            isLatestAiSuggestion ? (
+                              <>
+                                <Button
+                                  onClick={() =>
+                                    handleSuggestionDecision(
+                                      rawCommentId,
+                                      "accepted"
+                                    )
+                                  }
+                                  disabled={decisionBusyId === rawCommentId}
+                                  size="sm"
+                                  className="bg-emerald-600 hover:bg-emerald-700"
+                                >
+                                  {decisionBusyId === rawCommentId ? (
+                                    <>
+                                      <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                      Saving…
+                                    </>
+                                  ) : (
+                                    <>
+                                      <CheckCircle2 className="mr-2 h-3 w-3" />
+                                      Accept
+                                    </>
+                                  )}
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    handleSuggestionDecision(
+                                      rawCommentId,
+                                      "rejected"
+                                    )
+                                  }
+                                  disabled={decisionBusyId === rawCommentId}
+                                  size="sm"
+                                  variant="destructive"
+                                >
+                                  {decisionBusyId === rawCommentId ? (
+                                    <>
+                                      <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                      Saving…
+                                    </>
+                                  ) : (
+                                    <>
+                                      <XCircle className="mr-2 h-3 w-3" />
+                                      Reject
+                                    </>
+                                  )}
+                                </Button>
+                              </>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                Suggestion generated before review controls were
+                                available.
+                              </span>
                             )
-                          )}
-                        </ul>
-                      </div>
-                    ) : null}
-                    {isAiComment ? (
-                      <div className="mt-4 flex flex-wrap items-center gap-3">
-                        {decision ? (
-                          <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-                              decision === "accepted"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-rose-100 text-rose-700"
-                            }`}
-                          >
-                            {decision === "accepted"
-                              ? "Suggestion accepted"
-                              : "Suggestion rejected"}
-                            {decisionAt ? ` · ${decisionAt}` : ""}
-                          </span>
-                        ) : canModerateSuggestions ? (
-                          isLatestAiSuggestion ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleSuggestionDecision(
-                                    rawCommentId,
-                                    "accepted"
-                                  )
-                                }
-                                disabled={decisionBusyId === rawCommentId}
-                                className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-emerald-400"
-                              >
-                                {decisionBusyId === rawCommentId
-                                  ? "Saving…"
-                                  : "Accept"}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleSuggestionDecision(
-                                    rawCommentId,
-                                    "rejected"
-                                  )
-                                }
-                                disabled={decisionBusyId === rawCommentId}
-                                className="rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-rose-400"
-                              >
-                                {decisionBusyId === rawCommentId
-                                  ? "Saving…"
-                                  : "Reject"}
-                              </button>
-                            </>
                           ) : (
-                            <span className="text-xs text-slate-500">
-                              Suggestion generated before review controls were
-                              available.
+                            <span className="text-xs text-muted-foreground">
+                              Awaiting moderator review.
                             </span>
-                          )
-                        ) : (
-                          <span className="text-xs text-slate-500">
-                            Awaiting moderator review.
-                          </span>
-                        )}
-                      </div>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-          {canPostComment ? (
-            <form className="grid gap-3" onSubmit={handleCommentSubmit}>
-              <label
-                htmlFor="ticket-reply"
-                className="text-sm font-medium text-slate-700"
-              >
-                Add a reply
-              </label>
-              <textarea
-                id="ticket-reply"
-                name="ticket-reply"
-                value={commentBody}
-                onChange={handleCommentChange}
-                rows={4}
-                placeholder="Share an update or ask a follow-up question…"
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-slate-100"
-                aria-required="true"
-                disabled={isSubmittingComment}
-              />
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={isSubmittingComment || !commentBody.trim().length}
-                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-400"
-                >
-                  {isSubmittingComment ? "Posting…" : "Post reply"}
-                </button>
-              </div>
-            </form>
-          ) : null}
-        </section>
+                          )}
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {canPostComment ? (
+              <form className="grid gap-3" onSubmit={handleCommentSubmit}>
+                <Label htmlFor="ticket-reply">Add a reply</Label>
+                <Textarea
+                  id="ticket-reply"
+                  name="ticket-reply"
+                  value={commentBody}
+                  onChange={handleCommentChange}
+                  rows={4}
+                  placeholder="Share an update or ask a follow-up question…"
+                  aria-required="true"
+                  disabled={isSubmittingComment}
+                />
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    disabled={isSubmittingComment || !commentBody.trim().length}
+                  >
+                    {isSubmittingComment ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Posting…
+                      </>
+                    ) : (
+                      "Post reply"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            ) : null}
+          </CardContent>
+        </Card>
 
         <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
+          <Button
             onClick={handleRetryClick}
             onKeyDown={handleRetryKeyDown}
             tabIndex={0}
             aria-label="Refresh ticket details"
-            className="rounded-md bg-blue-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
+            <RefreshCw className="mr-2 h-4 w-4" />
             Refresh details
-          </button>
+          </Button>
         </div>
       </div>
     </main>
